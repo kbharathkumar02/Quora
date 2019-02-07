@@ -8,6 +8,7 @@ G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\serv
 G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\business\UserAdminBusinessService.java
 G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\entity\UserEntity.java
 G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\exception\SignUpRestrictedException.java
+G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\business\userBusinessUserProfileService.java
 G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\exception\InvalidQuestionException.java
 G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\exception\AnswerNotFoundException.java
 G:\PGDSD\APIs\Assignment\Quora\quora-service\src\main\java\com\upgrad\quora\service\common\UnexpectedException.java

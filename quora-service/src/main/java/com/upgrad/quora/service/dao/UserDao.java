@@ -20,4 +20,11 @@ public class UserDao {
         entityManager.remove(userEntity);
 
     }
+
+    public UserEntity viewUserProfile(final String userUuid) {
+
+        return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", userUuid).getSingleResult();
+
+
+    }
 }
