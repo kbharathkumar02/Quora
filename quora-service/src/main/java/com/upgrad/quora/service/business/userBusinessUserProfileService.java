@@ -1,7 +1,9 @@
 package com.upgrad.quora.service.business;
 
+
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 
 @Service
-public class UserAdminBusinessService {
+public class userBusinessUserProfileService {
 
     @Autowired
     private UserDao userDao;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public String deleteUser(final String userUuid, final String authorization) throws AuthorizationFailedException, UserNotFoundException {
-
+    public UserEntity viewUserProfile(final String userUuid,  final String authorization) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorization);
 
         if(userAuthTokenEntity == null) {
@@ -32,30 +33,23 @@ public class UserAdminBusinessService {
 
             if(logoutAt != null) {
 
-                throw new AuthorizationFailedException("ATHR-002", "User is signed out");
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
 
             }
             else {
 
-                String role = userAuthTokenEntity.getUser().getRole();
-                if(role.equals("admin")) {
-
-                    return userDao.deleteUser(userUuid);
-
+                UserEntity userEntity = userDao.viewUserProfile(userUuid);
+                if(userEntity == null) {
+                    throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
                 }
                 else {
-
-                    throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+                    return userEntity;
                 }
-
 
             }
 
         }
 
-
-
-
-
     }
 }
+

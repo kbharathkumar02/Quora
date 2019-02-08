@@ -24,6 +24,8 @@ G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\io\swagger\c
 G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\com\upgrad\quora\api\model\AnswerDetailsResponse.java
 G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\com\upgrad\quora\api\model\QuestionDetailsResponse.java
 G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\com\upgrad\quora\api\model\AnswerEditResponse.java
+G:\PGDSD\APIs\Assignment\Quora\quora-api\src\main\java\com\upgrad\quora\api\controller\CommonController.java
+G:\PGDSD\APIs\Assignment\Quora\quora-api\src\main\java\com\upgrad\quora\api\exception\RestExceptionHandler.java
 G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\com\upgrad\quora\api\model\QuestionRequest.java
 G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\io\swagger\api\ApiException.java
 G:\PGDSD\APIs\Assignment\Quora\quora-api\target\generated-sources\.\com\upgrad\quora\api\model\SigninResponse.java
