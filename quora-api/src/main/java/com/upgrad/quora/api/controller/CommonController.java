@@ -5,10 +5,7 @@ import com.upgrad.quora.service.business.userBusinessUserProfileService;
 import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
@@ -19,7 +16,7 @@ public class CommonController {
 
 
     @RequestMapping(method = RequestMethod.GET, path = "/userprofile/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserEntity viewUserProfile(@PathVariable("userId") final String userUuid) {
-        return userBusinessUserProfileService.viewUserProfile(userUuid);
+    public UserEntity viewUserProfile(@PathVariable("userId") final String userUuid,  @RequestHeader("authorization") final String authorization) {
+        return userBusinessUserProfileService.viewUserProfile(userUuid, authorization);
     }
 }

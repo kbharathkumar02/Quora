@@ -14,7 +14,7 @@ public class AdminController {
     @Autowired
     private UserAdminBusinessService userAdminBusinessService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/admin/user/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.DELETE, path = "/admin/user/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void deleteUser(@PathVariable("userId") final String userUuid, @RequestHeader("authorization") final String authorization) {
         userAdminBusinessService.deleteUser(userUuid, authorization);
     }

@@ -20,7 +20,6 @@ public class UserAdminBusinessService {
 
         String role = userAuthTokenEntity.getUser().getRole();
 
-        System.out.println("The role is " + role + " auth " + authorization);
         if(role.equals("admin")) {
 
             userDao.deleteUser(userUuid);
