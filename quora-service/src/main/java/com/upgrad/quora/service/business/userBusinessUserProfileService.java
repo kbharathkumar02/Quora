@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 
 @Service
-//Class with business logiv to view user profile
+//Class with business logic to view user profile
 public class userBusinessUserProfileService {
 
     @Autowired

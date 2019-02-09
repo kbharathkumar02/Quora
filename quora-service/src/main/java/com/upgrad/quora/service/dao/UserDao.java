@@ -17,23 +17,33 @@ public class UserDao {
 
     @PersistenceContext
     private EntityManager entityManager;
-    
+
+    //Method to delete User and will be called only if the requesting user is authorized(admin) and logged in
     public String deleteUser(final String userUuid) throws UserNotFoundException {
 
         UserEntity userEntity;
+
         try {
+
             userEntity = entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", userUuid).getSingleResult();
+
         }
-        catch(NoResultException nre) {
+        catch(NoResultException nre) {  //if the user to be deleted does not exist assign null to userentity
+
             userEntity = null;
+
         }
 
-        if(userEntity == null) {
+        if(userEntity == null) {    //if the user to be deleted does not exist then throw this exception with message below
+
             throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
+
         }
-        else {
+        else {  //f the user exists then remove the user from the database as this request is called by only admin and is authorized
+
             entityManager.remove(userEntity);
             return userUuid;
+
         }
 
 

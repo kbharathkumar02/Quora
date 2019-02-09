@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 
 @Service
+//Class with business logic to delete user
 public class UserAdminBusinessService {
 
     @Autowired
@@ -22,15 +23,16 @@ public class UserAdminBusinessService {
 
         UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorization);
 
-        if(userAuthTokenEntity == null) {
+        if(userAuthTokenEntity == null) {   //If the requesting user is not logged throw a custom exception with the message below
 
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+
         }
         else {
 
             ZonedDateTime logoutAt = userAuthTokenEntity.getLogoutAt();
 
-            if(logoutAt != null) {
+            if(logoutAt != null) {  ////If the requesting user is already logged out by the time delete user is called throw a custom exception with message below
 
                 throw new AuthorizationFailedException("ATHR-002", "User is signed out");
 
@@ -38,12 +40,13 @@ public class UserAdminBusinessService {
             else {
 
                 String role = userAuthTokenEntity.getUser().getRole();
-                if(role.equals("admin")) {
+
+                if(role.equals("admin")) {  //If the requesting user who is admin(authorized) and logged in and trying to delete user call this method which deletes the user
 
                     return userDao.deleteUser(userUuid);
 
                 }
-                else {
+                else {  //If the requesting user who is logged in but is nonadmin/not authorized and trying to delete user throw this exception with the message below
 
                     throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
                 }
