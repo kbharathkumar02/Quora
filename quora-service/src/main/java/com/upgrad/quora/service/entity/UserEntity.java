@@ -49,7 +49,7 @@ public class UserEntity implements Serializable {
 
     @NotNull
     @ToStringExclude
-    @Size(max=255)
+    @Size(max = 255)
     @Column(name = "password")
     private String password;
 

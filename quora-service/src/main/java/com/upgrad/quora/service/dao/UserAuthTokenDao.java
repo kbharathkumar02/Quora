@@ -13,6 +13,11 @@ public class UserAuthTokenDao {
     @Autowired
     EntityManager entityManager;
 
+    /**
+     * retrieves the user auth token
+     * @param accessToken
+     * @return
+     */
     public UserAuthTokenEntity getAuthToken(final String accessToken) {
         try {
             return entityManager.createNamedQuery("userAuthTokenByAccessToken", UserAuthTokenEntity.class).setParameter("accessToken", accessToken).getSingleResult();

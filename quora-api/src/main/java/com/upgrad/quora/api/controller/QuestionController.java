@@ -30,6 +30,13 @@ public class QuestionController {
     private static String QUESTION_EDITED = "QUESTION EDITED";
     private static String QUESTION_DELETED = "QUESTION DELETED";
 
+    /**
+     * This method creates question
+     * @param questionRequest
+     * @param authorizationToken
+     * @return
+     * @throws AuthorizationFailedException
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/question/create",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -55,6 +62,12 @@ public class QuestionController {
         return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.OK);
     }
 
+    /**
+     * This methhod retrieves all the question
+     * @param authorizationToken
+     * @return
+     * @throws AuthorizationFailedException
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/question/all",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorizationToken) throws AuthorizationFailedException {
@@ -80,10 +93,19 @@ public class QuestionController {
 
     }
 
+    /**
+     * This method edits the question content for the question id
+     * @param authorizationToken
+     * @param questionId
+     * @param questionEditRequest
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws InvalidQuestionException
+     */
 
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
-                   consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-                   produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionEditResponse> editQuestionContent(@RequestHeader("authorization") final String authorizationToken,
                                                                     @PathVariable("questionId") final String questionId, QuestionEditRequest questionEditRequest)
             throws AuthorizationFailedException, InvalidQuestionException {
@@ -113,6 +135,15 @@ public class QuestionController {
         }
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
+
+    /**
+     * This method deletes the question for a given question id
+     * @param authorizationToken
+     * @param questionId
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws InvalidQuestionException
+     */
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String authorizationToken,
@@ -143,6 +174,14 @@ public class QuestionController {
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
 
+    /**
+     * This method retrieves all the questions by a user
+     * @param authorizationToken
+     * @param userUuId
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws UserNotFoundException
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@RequestHeader("authorizationToken") final String authorizationToken,
@@ -150,9 +189,9 @@ public class QuestionController {
             UserNotFoundException {
         List<QuestionDetailsResponse> questionDetailsResponseList = new ArrayList<QuestionDetailsResponse>();
         UserEntity userEntity = questionBusinessService.getUserForUserId(userUuId);
-        if (userEntity!= null) {
+        if (userEntity != null) {
             UserAuthTokenEntity userAuthTokenEntity = questionBusinessService.getUserAuthToken(authorizationToken);
-            if(userAuthTokenEntity!=null){
+            if (userAuthTokenEntity != null) {
                 if (questionBusinessService.isUserSignedIn(userAuthTokenEntity)) {
 
                     if (userEntity != null) {
@@ -162,8 +201,7 @@ public class QuestionController {
                                 questionDetailsResponseList.add(new QuestionDetailsResponse().id(questionEntity.getUuid())
                                         .content(questionEntity.getContent()));
                             }
-                        }
-                        else{
+                        } else {
                             System.err.println("0809 not throwing any exception");
                         }
                     }
@@ -171,8 +209,7 @@ public class QuestionController {
 
                     throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user");
                 }
-            }
-            else{
+            } else {
                 throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
             }
 
