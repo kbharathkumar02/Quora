@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 
 @Service
+//Class with business logiv to view user profile
 public class userBusinessUserProfileService {
 
     @Autowired
@@ -21,9 +22,10 @@ public class userBusinessUserProfileService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity viewUserProfile(final String userUuid,  final String authorization) throws AuthorizationFailedException, UserNotFoundException {
+
         UserAuthTokenEntity userAuthTokenEntity = userDao.getUserAuthToken(authorization);
 
-        if(userAuthTokenEntity == null) {
+        if(userAuthTokenEntity == null) {   //If the requesting user is not logged throw a custom exception with the message below
 
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
@@ -31,7 +33,7 @@ public class userBusinessUserProfileService {
 
             ZonedDateTime logoutAt = userAuthTokenEntity.getLogoutAt();
 
-            if(logoutAt != null) {
+            if(logoutAt != null) {  //If the requesting user is already logged out by the time view user profile is called throw a custom exception with message below
 
                 throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
 
@@ -39,11 +41,16 @@ public class userBusinessUserProfileService {
             else {
 
                 UserEntity userEntity = userDao.viewUserProfile(userUuid);
-                if(userEntity == null) {
+
+                if(userEntity == null) {    //If the requesting user is logged in but trying to view user profile for non existing user
+
                     throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+
                 }
-                else {
+                else {  //If the requesting user is logged in and trying to view user profile for existing user return the user details
+
                     return userEntity;
+
                 }
 
             }
