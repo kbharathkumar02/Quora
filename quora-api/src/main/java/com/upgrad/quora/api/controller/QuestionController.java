@@ -113,4 +113,33 @@ public class QuestionController {
         }
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
+    @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@RequestHeader("authorization") final String authorizationToken,
+                                                                 @PathVariable("questionId") final String questionId)
+            throws AuthorizationFailedException, InvalidQuestionException {
+        QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse();
+        UserAuthTokenEntity userAuthTokenEntity = questionBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (questionBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                QuestionEntity questionEntity = questionBusinessService.getUserForQuestionId(questionId);
+                if (questionEntity != null) {
+                    if (questionBusinessService.isUserQuestionOwner(userAuthTokenEntity.getUser(), questionEntity.getUser())
+                            || questionBusinessService.isUserAdmin(userAuthTokenEntity.getUser())) {
+                        questionBusinessService.deleteQuestion(questionEntity);
+                        questionDeleteResponse.id(questionId).status(QUESTION_DELETED);
+                    } else {
+                        throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
+                    }
+                } else {
+                    throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+                }
+            } else {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete a question");
+            }
+        } else {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
+    }
 }

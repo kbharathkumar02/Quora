@@ -72,4 +72,15 @@ public class QuestionBusinessService {
     public void updateQuestion(QuestionEntity questionEntity) {
         questionDao.updateQuestion(questionEntity);
     }
+    public boolean isUserAdmin(UserEntity user) {
+        boolean isUserAdmin = false;
+        if (user != null && "admin".equals(user.getRole())) {
+            isUserAdmin = true;
+        }
+        return isUserAdmin;
+    }
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteQuestion(QuestionEntity questionEntity) {
+        questionDao.deleteQuestion(questionEntity);
+    }
 }
