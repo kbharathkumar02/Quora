@@ -142,4 +142,47 @@ public class QuestionController {
         }
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@RequestHeader("authorizationToken") final String authorizationToken,
+                                                                               @PathVariable("userId") final String userUuId) throws AuthorizationFailedException,
+            UserNotFoundException {
+        List<QuestionDetailsResponse> questionDetailsResponseList = new ArrayList<QuestionDetailsResponse>();
+        UserEntity userEntity = questionBusinessService.getUserForUserId(userUuId);
+        if (userEntity!= null) {
+            UserAuthTokenEntity userAuthTokenEntity = questionBusinessService.getUserAuthToken(authorizationToken);
+            if(userAuthTokenEntity!=null){
+                if (questionBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+
+                    if (userEntity != null) {
+                        List<QuestionEntity> questionEntityList = questionBusinessService.getQuestionsForUserId(userEntity.getId());
+                        if (questionEntityList != null && !questionEntityList.isEmpty()) {
+                            for (QuestionEntity questionEntity : questionEntityList) {
+                                questionDetailsResponseList.add(new QuestionDetailsResponse().id(questionEntity.getUuid())
+                                        .content(questionEntity.getContent()));
+                            }
+                        }
+                        else{
+                            System.err.println("0809 not throwing any exception");
+                        }
+                    }
+                } else {
+
+                    throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user");
+                }
+            }
+            else{
+                throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+            }
+
+        } else {
+
+            throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
+
+        }
+        return new ResponseEntity<List<QuestionDetailsResponse>>(questionDetailsResponseList, HttpStatus.OK);
+
+    }
+
 }

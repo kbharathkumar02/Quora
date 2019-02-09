@@ -2,6 +2,7 @@ package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserAuthTokenDao;
+import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -23,12 +24,20 @@ public class QuestionBusinessService {
     @Autowired
     private UserAuthTokenDao userAuthTokenDao;
 
-
+    @Autowired
+    private UserDao userDao;
 
     public UserAuthTokenEntity getUserAuthToken(final String authorizationToken) {
-        if (authorizationToken != null && !authorizationToken.isEmpty() ) {
-            return userAuthTokenDao.getAuthToken(authorizationToken);
-        } else {
+        if (authorizationToken != null && !authorizationToken.isEmpty()) {
+            String[] bearer = authorizationToken.split("Bearer ");
+            if (bearer != null && bearer.length > 1) {
+                return userAuthTokenDao.getAuthToken(bearer[1]);
+            }
+            else {
+                return null;
+            }
+        }
+        else{
             return null;
         }
     }
@@ -82,5 +91,13 @@ public class QuestionBusinessService {
     @Transactional(propagation = Propagation.REQUIRED)
     public void deleteQuestion(QuestionEntity questionEntity) {
         questionDao.deleteQuestion(questionEntity);
+    }
+
+    public UserEntity getUserForUserId(String userUuid){
+        return userDao.getUser(userUuid);
+    }
+
+    public List<QuestionEntity> getQuestionsForUserId(Integer userId) {
+        return questionDao.getQuestionsForUserId(userId);
     }
 }

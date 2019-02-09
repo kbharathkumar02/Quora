@@ -42,4 +42,12 @@ public class QuestionDao {
     public void deleteQuestion(QuestionEntity questionEntity) {
         entityManager.remove(questionEntity);
     }
+
+    public List<QuestionEntity> getQuestionsForUserId(Integer userId) {
+        try {
+            return entityManager.createNamedQuery("questionsByUserId", QuestionEntity.class).setParameter("userId", userId).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }
