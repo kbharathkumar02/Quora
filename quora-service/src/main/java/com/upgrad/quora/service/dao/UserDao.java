@@ -41,21 +41,34 @@ public class UserDao {
 
     }
 
+    //Method to retrieve User details if the requesting user is authorized and logged in
     public UserEntity viewUserProfile(final String userUuid) {
 
         try {
+
             return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", userUuid).getSingleResult();
-        } catch(NoResultException nre) {
+
+        }
+        catch(NoResultException nre) {  //If the user with supplied Uuid is not existing return null
+
             return null;
+
         }
 
     }
 
+    //Method to retrieve UserAuth Entity based on the access token provided in the request header
     public UserAuthTokenEntity getUserAuthToken(final String accesstoken) {
+
         try {
+
             return entityManager.createNamedQuery("userAuthTokenByAccessToken", UserAuthTokenEntity.class).setParameter("accessToken", accesstoken).getSingleResult();
-        } catch (NoResultException nre) {
+
+        }
+        catch (NoResultException nre) { //If the userAuth entity with supplied access token is not existing return null
+
             return null;
+
         }
     }
 }
