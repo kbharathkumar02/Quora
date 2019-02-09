@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 
 @Service
 //Class with business logiv to view user profile
-public class userBusinessUserProfileService {
+public class CommonBusinessService {
 
     @Autowired
     private UserDao userDao;
