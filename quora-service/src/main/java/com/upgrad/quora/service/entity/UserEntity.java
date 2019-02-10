@@ -9,19 +9,21 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "users", schema = "public")
 @NamedQueries(
         value = {
-                @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid = :uuid"),
+                @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid"),
                 @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
-                @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName =:userName")
+                @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName =:userName"),
         }
 )
 
 
-public class UserEntity implements Serializable{
+public class UserEntity implements Serializable {
+
 
     @Id
     @Column(name = "id")
@@ -48,7 +50,9 @@ public class UserEntity implements Serializable{
     @Size(max = 50)
     private String email;
 
-    //@ToStringExclude
+    @NotNull
+//    @ToStringExclude
+    @Size(max=255)
     @Column(name = "password")
     private String password;
 
@@ -65,12 +69,12 @@ public class UserEntity implements Serializable{
     @Column(name = "contactnumber")
     @NotNull
     @Size(max = 50)
-    private String contactnumber;
+    private String contactNumber;
 
     @Column(name = "salt")
     @NotNull
     @Size(max = 200)
-    //@ToStringExclude
+//    @ToStringExclude
     private String salt;
 
     @Column(name = "country")
@@ -81,14 +85,23 @@ public class UserEntity implements Serializable{
     @Size(max = 50)
     private String aboutMe;
 
-    @Column(name="dob")
+    @Column(name = "dob")
     @NotNull
     private String dob;
 
-    @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
-    }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+
+    private List<QuestionEntity> questions;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<AnswerEntity> answers;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    private List<UserAuthTokenEntity> userAuthTokens;
+
 
     public Integer getId() {
         return id;
@@ -154,12 +167,20 @@ public class UserEntity implements Serializable{
         this.lastName = lastName;
     }
 
-    public String getContactNumber() {
-        return contactnumber;
+    public String getContactnumber() {
+        return contactNumber;
     }
 
-    public void setContactNumber(String contactnumber) {
-        this.contactnumber = contactnumber;
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public String getCountry() {
@@ -178,20 +199,45 @@ public class UserEntity implements Serializable{
         this.aboutMe = aboutMe;
     }
 
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
     public String getDob() {
         return dob;
     }
 
     public void setDob(String dob) {
         this.dob = dob;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public List<QuestionEntity> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<QuestionEntity> questions) {
+        this.questions = questions;
+    }
+
+    public List<AnswerEntity> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<AnswerEntity> answers) {
+        this.answers = answers;
+    }
+
+    public List<UserAuthTokenEntity> getUserAuthTokens() {
+        return userAuthTokens;
+    }
+
+    public void setUserAuthTokens(List<UserAuthTokenEntity> userAuthTokens) {
+        this.userAuthTokens = userAuthTokens;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return new EqualsBuilder().append(this, obj).isEquals();
     }
 
     @Override

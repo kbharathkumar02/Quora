@@ -16,7 +16,8 @@ import java.util.List;
 @Table(name = "question", schema = "public")
 @NamedQueries({
         @NamedQuery(name = "getAllQuestions", query = "select q from QuestionEntity q"),
-        @NamedQuery(name = "getOwnerForQuestionId", query = "select q from QuestionEntity q where q.uuid = :uuid")
+        @NamedQuery(name = "getOwnerForQuestionId", query = "select q from QuestionEntity q where q.uuid = :uuid"),
+        @NamedQuery(name="questionsByUserId" , query = "select q from QuestionEntity q where q.user.id= :userId")
 })
 public class QuestionEntity implements Serializable {
 
@@ -43,7 +44,7 @@ public class QuestionEntity implements Serializable {
     private ZonedDateTime date;
 
 
-    @OneToMany(mappedBy = "question" ,cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "question" ,cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<AnswerEntity> answers;
 
 

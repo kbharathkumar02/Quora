@@ -55,4 +55,62 @@ public class QuestionController {
         return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/question/all",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorizationToken) throws AuthorizationFailedException {
+        List<QuestionDetailsResponse> questionDetailsResponseList = new ArrayList<QuestionDetailsResponse>();
+        UserAuthTokenEntity userAuthTokenEntity = questionBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (questionBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                List<QuestionEntity> questionEntityList = new ArrayList<QuestionEntity>();
+                questionEntityList = questionBusinessService.getAllQuestions();
+                if (questionEntityList != null && !questionEntityList.isEmpty()) {
+                    for (QuestionEntity qEntity : questionEntityList) {
+                        questionDetailsResponseList.add(new QuestionDetailsResponse().id(qEntity.getUuid()).content(qEntity.getContent()));
+                    }
+                }
+
+            } else {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions");
+            }
+        } else {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        return new ResponseEntity<List<QuestionDetailsResponse>>(questionDetailsResponseList, HttpStatus.OK);
+
+    }
+
+
+    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
+                   consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+                   produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestionContent(@RequestHeader("authorization") final String authorizationToken,
+                                                                    @PathVariable("questionId") final String questionId, QuestionEditRequest questionEditRequest)
+            throws AuthorizationFailedException, InvalidQuestionException {
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse();
+
+        UserAuthTokenEntity userAuthTokenEntity = questionBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (questionBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                QuestionEntity questionEntity = questionBusinessService.getUserForQuestionId(questionId);
+                if (questionEntity != null) {
+                    if (questionBusinessService.isUserQuestionOwner(userAuthTokenEntity.getUser(), questionEntity.getUser())) {
+                        questionEntity.setContent(questionEditRequest.getContent());
+                        questionBusinessService.updateQuestion(questionEntity);
+                        questionEditResponse.setId(questionEntity.getUuid());
+                        questionEditResponse.setStatus(QUESTION_EDITED);
+                    } else {
+                        throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
+                    }
+                } else {
+                    throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+                }
+            } else {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit the question");
+            }
+        } else {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
+    }
 }

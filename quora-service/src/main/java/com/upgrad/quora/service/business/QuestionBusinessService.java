@@ -1,7 +1,7 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
-import com.upgrad.quora.service.dao.UserDao;
+import com.upgrad.quora.service.dao.UserAuthTokenDao;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
@@ -16,20 +16,18 @@ import java.util.List;
 @Service
 public class QuestionBusinessService {
 
-    @Autowired
-    private UserBusinessService userBusinessService;
 
     @Autowired
     private QuestionDao questionDao;
 
     @Autowired
-    private UserDao userDao;
+    private UserAuthTokenDao userAuthTokenDao;
+
 
 
     public UserAuthTokenEntity getUserAuthToken(final String authorizationToken) {
-        if (authorizationToken != null && !authorizationToken.isEmpty() && authorizationToken.split("Bearer").length > 1) {
-            String bearerToken = authorizationToken.split("Bearer ")[1];
-            return userDao.getAuthToken(bearerToken);
+        if (authorizationToken != null && !authorizationToken.isEmpty() ) {
+            return userAuthTokenDao.getAuthToken(authorizationToken);
         } else {
             return null;
         }
@@ -51,4 +49,27 @@ public class QuestionBusinessService {
         return questionDao.createQuestion(questionEntity);
     }
 
+    public List<QuestionEntity> getAllQuestions() {
+        return questionDao.getAllQuestions();
+    }
+
+    public QuestionEntity getUserForQuestionId(String uuid) {
+        return questionDao.getUserForQuestionId(uuid);
+    }
+
+     public boolean isUserQuestionOwner(UserEntity user, UserEntity questionOwner) {
+        boolean isUserQuestionOwner = false;
+        if (user != null && questionOwner != null && user.getUuid() != null && !user.getUuid().isEmpty()
+                && questionOwner.getUuid() != null && !questionOwner.getUuid().isEmpty()) {
+            if (user.getUuid().equals(questionOwner.getUuid())) {
+                isUserQuestionOwner = true;
+            }
+        }
+        return isUserQuestionOwner;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void updateQuestion(QuestionEntity questionEntity) {
+        questionDao.updateQuestion(questionEntity);
+    }
 }
