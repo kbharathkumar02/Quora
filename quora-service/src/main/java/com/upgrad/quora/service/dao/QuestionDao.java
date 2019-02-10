@@ -17,6 +17,7 @@ public class QuestionDao {
 
     /**
      * his method creates question
+     *
      * @param questionEntity
      * @return
      */
@@ -27,6 +28,7 @@ public class QuestionDao {
 
     /**
      * retrieves all the questions
+     *
      * @return
      */
     public List<QuestionEntity> getAllQuestions() {
@@ -39,6 +41,7 @@ public class QuestionDao {
 
     /**
      * retrieves user for question id
+     *
      * @param uuid
      * @return
      */
@@ -52,6 +55,7 @@ public class QuestionDao {
 
     /**
      * this methoed updates the question for passed in questionEntity object in DB
+     *
      * @param questionEntity
      */
     public void updateQuestion(QuestionEntity questionEntity) {
@@ -60,6 +64,7 @@ public class QuestionDao {
 
     /**
      * This method deletes the question for question entity
+     *
      * @param questionEntity
      */
     public void deleteQuestion(QuestionEntity questionEntity) {
@@ -68,6 +73,7 @@ public class QuestionDao {
 
     /**
      * This method gets the questions for a user id
+     *
      * @param userId
      * @return
      */

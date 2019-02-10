@@ -15,6 +15,7 @@ import java.util.List;
                 @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid"),
                 @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
                 @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName =:userName"),
+                @NamedQuery(name = "userAuthTokenByAccessToken", query = "select u from UserAuthTokenEntity u where u.accessToken = :accessToken ")
         }
 )
 
