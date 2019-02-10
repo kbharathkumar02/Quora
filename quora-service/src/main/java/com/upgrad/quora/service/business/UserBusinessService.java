@@ -134,6 +134,9 @@ public class UserBusinessService {
         }
         return isUserSignedIn;
     }*/
+    /*In the method below it is assumed that expires_at value need not be validated to check whether the value is in the past or future considering that it is
+    not mentioned in the requirements and also by looking at the way the unit test cases which are provided are designed. If this should have been implemented, we
+    have the logic for it in the commented method implementation above*/
     public boolean isUserSignedIn(UserAuthTokenEntity userAuthTokenEntity) {
         boolean isUserSignedIn = false;
         if (userAuthTokenEntity != null && userAuthTokenEntity.getLoginAt() != null && userAuthTokenEntity.getExpiresAt() != null) {
