@@ -193,25 +193,20 @@ public class QuestionBusinessService {
                                                              @PathVariable("userId") final String userUuId) throws AuthorizationFailedException,
             UserNotFoundException {
         List<QuestionEntity> questionEntityList = new ArrayList<QuestionEntity>();
-        UserEntity userEntity = userDao.getUser(userUuId);
-        if (userEntity != null) {
-            UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
-            if (userAuthTokenEntity != null) {
-                if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
-                    if (userEntity != null) {
-                        questionEntityList = questionDao.getQuestionsForUserId(userEntity.getId());
-                    }
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                UserEntity userEntity = userDao.getUser(userUuId);
+                if (userEntity != null) {
+                    questionEntityList = questionDao.getQuestionsForUserId(userEntity.getId());
                 } else {
-                    throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user");
+                    throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
                 }
             } else {
-                throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user");
             }
-
         } else {
-
-            throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
-
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
         return questionEntityList;
     }

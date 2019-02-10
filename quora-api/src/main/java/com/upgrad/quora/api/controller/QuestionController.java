@@ -22,7 +22,7 @@ public class QuestionController {
     @Autowired
     private QuestionBusinessService questionBusinessService;
 
-    private static String QUESTION_CREATED = "QUESTION_CREATED";
+    private static String QUESTION_CREATED = "QUESTION CREATED";
     private static String QUESTION_EDITED = "QUESTION EDITED";
     private static String QUESTION_DELETED = "QUESTION DELETED";
 

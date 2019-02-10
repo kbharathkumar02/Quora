@@ -59,6 +59,7 @@ public class AnswerBusinessService {
             if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                 QuestionEntity question  = questionBusinessService.getQuestionForQuestionId(questionId);
                 if (question != null) {
+                    answerEntity.setQuestion(question);
                     answerEntity.setDate(ZonedDateTime.now());
                     answerEntity.setAnswer(answerContent);
                     answerEntity.setUuid(UUID.randomUUID().toString());

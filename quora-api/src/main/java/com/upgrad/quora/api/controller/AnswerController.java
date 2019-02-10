@@ -28,7 +28,7 @@ public class AnswerController {
     @Autowired
     private QuestionBusinessService questionBusinessService;
 
-    private static String ANSWER_CREATED = "ANSWER_CREATED";
+    private static String ANSWER_CREATED = "ANSWER CREATED";
     private static String ANSWER_EDITED = "ANSWER EDITED";
     private static String ANSWER_DELETED = "ANSWER DELETED";
 
