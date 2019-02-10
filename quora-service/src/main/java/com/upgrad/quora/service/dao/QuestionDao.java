@@ -84,4 +84,18 @@ public class QuestionDao {
             return null;
         }
     }
+
+
+    /**
+     * retrieves question for question id
+     * @param questionId
+     * @return
+     */
+    public QuestionEntity getQuestionForQuestionId(String questionId) {
+        try {
+            return entityManager.createNamedQuery("getQuestionForQuestionId", QuestionEntity.class).setParameter("uuid", questionId).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }

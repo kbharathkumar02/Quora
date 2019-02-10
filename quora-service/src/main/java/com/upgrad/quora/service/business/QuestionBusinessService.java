@@ -25,67 +25,25 @@ public class QuestionBusinessService {
     @Autowired
     private QuestionDao questionDao;
 
+    @Autowired
+    private UserBusinessService userBusinessService;
 
     @Autowired
     private UserDao userDao;
 
+    private final String ques001Code = "QUES-001";
+    private final String ques001MessageForCreateAnswer = "User has not signed in";
+    private final String ques001MessageForGetAllAnswers = "User has not signed in";
 
     /**
-     * retrieves the user auth token
+     * This method gest the user for user id
      *
-     * @param authorizationToken
+     * @param userUuid
      * @return
      */
-    public UserAuthTokenEntity getUserAuthToken(final String authorizationToken) throws AuthorizationFailedException {
-        UserAuthTokenEntity userAuthTokenEntity = null;
-        if (authorizationToken != null && !authorizationToken.isEmpty()) {
-            String accessToken;
-            //the below logic is deliberately written to make the input scenario of "Bearer authtoken" or "authToken" pass through.
-            //This is so because althought the standard authorization token string is of the form "Bearer AuthTokenString" the test cases are written with the
-            //format of the same mentioned as "AuthTokenString"
-            //There was not clear response on ofthe questions we put up in discussion forum on how should it be implemented to avoid losing any points pertaining to test cases.
-            //As such it has been implemented
-            if (authorizationToken.indexOf("Bearer ") != -1) {
-                String[] bearer = authorizationToken.split("Bearer ");
-                accessToken = bearer[1];
-            } else {
-                accessToken = authorizationToken;
-            }
-            userAuthTokenEntity = userDao.getAuthToken(accessToken);
-
-            return userAuthTokenEntity;
-        }
-        return userAuthTokenEntity;
-    }
-
-
-    /**
-     * validates if the user is signed in
-     *
-     * @param userAuthTokenEntity
-     * @return
-     */
-    public boolean isUserSignedIn(UserAuthTokenEntity userAuthTokenEntity) {
-        boolean isUserSignedIn = false;
-        if (userAuthTokenEntity != null && userAuthTokenEntity.getExpiresAt() != null && ZonedDateTime.now().isBefore(userAuthTokenEntity.getExpiresAt())) {
-            if ((userAuthTokenEntity.getLogoutAt() == null) ||
-                    (userAuthTokenEntity.getLogoutAt() != null && ZonedDateTime.now().isBefore(userAuthTokenEntity.getLogoutAt()))) {
-                isUserSignedIn = true;
-            }
-        }
-        return isUserSignedIn;
-    }
-
-
-    /**
-     * retrieves user for question id
-     *
-     * @param uuid
-     * @return
-     */
-//    public QuestionEntity getUserForQuestionId(String uuid) {
-//        return questionDao.getUserForQuestionId(uuid);
-//    }
+    /*public UserEntity getUserForUserId(String userUuid) {
+        return userDao.getUser(userUuid);
+    }*/
 
     /**
      * This method identifies if the user is the owners of the question
@@ -105,37 +63,12 @@ public class QuestionBusinessService {
         return isUserQuestionOwner;
     }
 
-
-    /**
-     * checks if the user is an admin
-     *
-     * @param user
-     * @return
-     */
-    public boolean isUserAdmin(UserEntity user) {
-        boolean isUserAdmin = false;
-        if (user != null && "admin".equals(user.getRole())) {
-            isUserAdmin = true;
-        }
-        return isUserAdmin;
-    }
-
-    /**
-     * This method gest the user for user id
-     *
-     * @param userUuid
-     * @return
-     */
-    public UserEntity getUserForUserId(String userUuid) {
-        return userDao.getUser(userUuid);
-    }
-
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity performCreateQuestion(final String authorizationToken, String QuestionContent) throws AuthorizationFailedException {
-        UserAuthTokenEntity userAuthTokenEntity = getUserAuthToken(authorizationToken);
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
         QuestionEntity questionEntity = new QuestionEntity();
         if (userAuthTokenEntity != null) {
-            if (isUserSignedIn(userAuthTokenEntity)) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                 questionEntity.setDate(ZonedDateTime.now());
                 questionEntity.setContent(QuestionContent);
                 questionEntity.setUuid(UUID.randomUUID().toString());
@@ -160,10 +93,10 @@ public class QuestionBusinessService {
      */
     public List<QuestionEntity> performGetAllQuestions(final String authorizationToken) throws AuthorizationFailedException {
 
-        UserAuthTokenEntity userAuthTokenEntity = getUserAuthToken(authorizationToken);
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
         List<QuestionEntity> questionEntityList = new ArrayList<QuestionEntity>();
         if (userAuthTokenEntity != null) {
-            if (isUserSignedIn(userAuthTokenEntity)) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                 questionEntityList = questionDao.getAllQuestions();
             } else {
                 throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions");
@@ -190,9 +123,9 @@ public class QuestionBusinessService {
                                                      final String questionId, String questionContent)
             throws AuthorizationFailedException, InvalidQuestionException {
         QuestionEntity questionEntity = new QuestionEntity();
-        UserAuthTokenEntity userAuthTokenEntity = getUserAuthToken(authorizationToken);
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
         if (userAuthTokenEntity != null) {
-            if (isUserSignedIn(userAuthTokenEntity)) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                 questionEntity = questionDao.getUserForQuestionId(questionId);
                 if (questionEntity != null) {
                     if (isUserQuestionOwner(userAuthTokenEntity.getUser(), questionEntity.getUser())) {
@@ -225,13 +158,13 @@ public class QuestionBusinessService {
     public void performDeleteQuestion(final String authorizationToken,
                                       final String questionId)
             throws AuthorizationFailedException, InvalidQuestionException {
-        UserAuthTokenEntity userAuthTokenEntity = getUserAuthToken(authorizationToken);
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
         if (userAuthTokenEntity != null) {
-            if (isUserSignedIn(userAuthTokenEntity)) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                 QuestionEntity questionEntity = questionDao.getUserForQuestionId(questionId);
                 if (questionEntity != null) {
                     if (isUserQuestionOwner(userAuthTokenEntity.getUser(), questionEntity.getUser())
-                            || isUserAdmin(userAuthTokenEntity.getUser())) {
+                            || userBusinessService.isUserAdmin(userAuthTokenEntity.getUser())) {
                         questionDao.deleteQuestion(questionEntity);
                     } else {
                         throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
@@ -262,9 +195,9 @@ public class QuestionBusinessService {
         List<QuestionEntity> questionEntityList = new ArrayList<QuestionEntity>();
         UserEntity userEntity = userDao.getUser(userUuId);
         if (userEntity != null) {
-            UserAuthTokenEntity userAuthTokenEntity = getUserAuthToken(authorizationToken);
+            UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
             if (userAuthTokenEntity != null) {
-                if (isUserSignedIn(userAuthTokenEntity)) {
+                if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                     if (userEntity != null) {
                         questionEntityList = questionDao.getQuestionsForUserId(userEntity.getId());
                     }
@@ -281,7 +214,14 @@ public class QuestionBusinessService {
 
         }
         return questionEntityList;
-
     }
 
+    /**
+     * This method gets the question for a question id
+     * @param questionId
+     * @return
+     */
+    public QuestionEntity getQuestionForQuestionId(String questionId) {
+        return questionDao.getQuestionForQuestionId(questionId);
+    }
 }

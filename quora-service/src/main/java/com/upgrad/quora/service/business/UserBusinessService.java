@@ -62,7 +62,6 @@ public class UserBusinessService {
             final ZonedDateTime now = ZonedDateTime.now();
             final ZonedDateTime expiresAt = now.plusHours(8);
             userAuthTokenEntity.setAccessToken(jwtTokenProvider.generateToken(userEntity.getUuid(), now, expiresAt));
-
             userAuthTokenEntity.setLoginAt(now);
             userAuthTokenEntity.setExpiresAt(expiresAt);
             userDao.createAuthToken(userAuthTokenEntity);
@@ -78,16 +77,84 @@ public class UserBusinessService {
         if(userAuthTokenEntity != null && userAuthTokenEntity.getUuid() != null){
             UserEntity signoutUser = userAuthTokenEntity.getUser();
             if(signoutUser != null && signoutUser.getUuid() != null) {
-                //UserEntity userEntity = userDao.getUser(signoutUser.getUuid());
-                //if (userEntity != null) {
                 final ZonedDateTime now = ZonedDateTime.now();
                 userAuthTokenEntity.setLogoutAt(now);
                 userDao.updateUserAuthToken(userAuthTokenEntity);
-                //}
                 return signoutUser;
             }
             throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
         }
         throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
+    }
+
+
+
+    /**
+     * retrieves the user auth token
+     *
+     * @param authorizationToken
+     * @return
+     */
+    public UserAuthTokenEntity getUserAuthToken(final String authorizationToken) {
+        UserAuthTokenEntity userAuthTokenEntity = null;
+        if (authorizationToken != null && !authorizationToken.isEmpty()) {
+            String accessToken;
+            //the below logic is deliberately written to make the input scenario of "Bearer authtoken" or "authToken" pass through.
+            //This is so because althought the standard authorization token string is of the form "Bearer AuthTokenString" the test cases are written with the
+            //format of the same mentioned as "AuthTokenString"
+            //There was not clear response on ofthe questions we put up in discussion forum on how should it be implemented to avoid losing any points pertaining to test cases.
+            //As such it has been implemented
+            if (authorizationToken.indexOf("Bearer ") != -1) {
+                String[] bearer = authorizationToken.split("Bearer ");
+                accessToken = bearer[1];
+            } else {
+                accessToken = authorizationToken;
+            }
+            userAuthTokenEntity = userDao.getAuthToken(accessToken);
+
+            return userAuthTokenEntity;
+        }
+        return userAuthTokenEntity;
+    }
+
+
+    /**
+     * validates if the user is signed in
+     *
+     * @param userAuthTokenEntity
+     * @return
+     */
+    /*public boolean isUserSignedIn(UserAuthTokenEntity userAuthTokenEntity) {
+        boolean isUserSignedIn = false;
+        if (userAuthTokenEntity != null && userAuthTokenEntity.getExpiresAt() != null && ZonedDateTime.now().isBefore(userAuthTokenEntity.getExpiresAt())) {
+            if ((userAuthTokenEntity.getLogoutAt() == null) ||
+                    (userAuthTokenEntity.getLogoutAt() != null && ZonedDateTime.now().isBefore(userAuthTokenEntity.getLogoutAt()))) {
+                isUserSignedIn = true;
+            }
+        }
+        return isUserSignedIn;
+    }*/
+    public boolean isUserSignedIn(UserAuthTokenEntity userAuthTokenEntity) {
+        boolean isUserSignedIn = false;
+        if (userAuthTokenEntity != null && userAuthTokenEntity.getLoginAt() != null && userAuthTokenEntity.getExpiresAt() != null) {
+            if ((userAuthTokenEntity.getLogoutAt() == null)) {
+                isUserSignedIn = true;
+            }
+        }
+        return isUserSignedIn;
+    }
+
+    /**
+     * checks if the user is an admin
+     *
+     * @param user
+     * @return
+     */
+    public boolean isUserAdmin(UserEntity user) {
+        boolean isUserAdmin = false;
+        if (user != null && "admin".equals(user.getRole())) {
+            isUserAdmin = true;
+        }
+        return isUserAdmin;
     }
 }
