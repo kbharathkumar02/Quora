@@ -108,12 +108,14 @@ public class AnswerBusinessService {
             if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
                 QuestionEntity questionEntity = questionBusinessService.getQuestionForQuestionId(questionId);
                 if (questionEntity != null) {
+                    //Even if the question is valid and there are no answers to the question we are deliberately
+                    //not responding with a message that there are no answers as it is not mentioned in requirements
                     return answerDao.getAllAnswersToQuestion(questionEntity.getId());
                 } else {
                     throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
                 }
             } else {
-                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get the answers");
             }
         } else {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
@@ -137,7 +139,7 @@ public class AnswerBusinessService {
                     throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
                 }
             } else {
-                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post a question");
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete an answer");
             }
         } else {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
