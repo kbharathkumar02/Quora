@@ -87,7 +87,6 @@ public class UserDao {
     }
 
     public UserEntity viewUserProfile(final String userUuid) {
-
         try {
             return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", userUuid).getSingleResult();
         } catch(NoResultException nre) {

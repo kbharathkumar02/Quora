@@ -118,4 +118,29 @@ public class AnswerBusinessService {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void performDeleteAnswer(final String authorizationToken, String answerId) throws AuthorizationFailedException, AnswerNotFoundException {
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                AnswerEntity answerEntity = getAnswerForAnswerId(answerId);
+                if (answerEntity != null) {
+                    if (isUserAnswerOwner(userAuthTokenEntity.getUser(), answerEntity.getUser())
+                            || userBusinessService.isUserAdmin(userAuthTokenEntity.getUser())) {
+                        answerDao.deleteAnswer(answerEntity);
+                    } else {
+                        throw new AuthorizationFailedException("ATHR-003", "Only the answer owner or admin can delete the answer");
+                    }
+                } else {
+                    throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
+                }
+            } else {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post a question");
+            }
+        } else {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+    }
+
 }

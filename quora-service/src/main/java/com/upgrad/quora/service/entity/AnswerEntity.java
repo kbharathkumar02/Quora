@@ -28,23 +28,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(
-        name = "answer",
-        schema = "public"
-)
-@NamedQueries({@NamedQuery(
-        name = "getAllAnswers",
-        query = "select q from AnswerEntity q"
-), @NamedQuery(
-        name = "getAnswersForQuestionId",
-        query = "select q from AnswerEntity q where q.question.id = :uuid"
-), @NamedQuery(
-        name = "getAnswersByUserId",
-        query = "select q from AnswerEntity q where q.uuid = :uuid"
-), @NamedQuery(
-        name = "getAnswerForAnswerId",
-        query = "select q from AnswerEntity q where q.uuid = :uuid"
-)})
+@Table(name = "answer", schema = "public")
+@NamedQueries({
+        @NamedQuery(name = "getAllAnswers", query = "select q from AnswerEntity q"),
+        @NamedQuery(name = "getAnswersForQuestionId", query = "select q from AnswerEntity q where q.question.id = :uuid"),
+        @NamedQuery(name = "getAnswersByUserId", query = "select q from AnswerEntity q where q.uuid = :uuid"),
+        @NamedQuery(name = "getAnswerForAnswerId", query = "select q from AnswerEntity q where q.uuid = :uuid")
+})
 public class AnswerEntity implements Serializable {
     @Id
     @Column(name = "id")
@@ -65,7 +55,7 @@ public class AnswerEntity implements Serializable {
     @NotNull
     private ZonedDateTime date;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private QuestionEntity question;
 

@@ -100,4 +100,23 @@ public class AnswerController {
         }
         return new ResponseEntity<List<AnswerDetailsResponse>>(answerDetailsResponseList, HttpStatus.OK);
     }
+
+    /**
+     * This method deletes the answer for a given answer id
+     * @param authorizationToken
+     * @param answerId
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws InvalidQuestionException
+     */
+    @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerDeleteResponse> deleteAnswer(@RequestHeader("authorization") final String authorizationToken,
+                                                             @PathVariable("answerId") final String answerId)
+            throws AuthorizationFailedException, AnswerNotFoundException {
+        AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse();
+        answerBusinessService.performDeleteAnswer(authorizationToken, answerId);
+        answerDeleteResponse.id(answerId).status(ANSWER_DELETED);
+        return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse, HttpStatus.OK);
+    }
 }

@@ -26,9 +26,21 @@ public class AnswerDao {
         return entityManager.merge(answerEntity);
     }
 
+    public void deleteAnswer(AnswerEntity answerEntity) {
+        entityManager.remove(answerEntity);
+    }
+
     public List<AnswerEntity> getAllAnswersToQuestion(int id) {
         try {
             return this.entityManager.createNamedQuery("getAnswersForQuestionId", AnswerEntity.class).setParameter("uuid", id).getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public AnswerEntity getAnswerForAnswerId(String uuid) {
+        try {
+            return this.entityManager.createNamedQuery("getAnswerForAnswerId", AnswerEntity.class).setParameter("uuid", uuid).getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
@@ -42,9 +54,9 @@ public class AnswerDao {
         }
     }
 
-    public AnswerEntity getAnswerForAnswerId(String uuid) {
+    public List<AnswerEntity> getAllAnswers() {
         try {
-            return this.entityManager.createNamedQuery("getAnswerForAnswerId", AnswerEntity.class).setParameter("uuid", uuid).getSingleResult();
+            return this.entityManager.createNamedQuery("getAllAnswers", AnswerEntity.class).getResultList();
         } catch (NoResultException nre) {
             return null;
         }
