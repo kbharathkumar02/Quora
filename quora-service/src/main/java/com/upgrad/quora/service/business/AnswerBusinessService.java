@@ -101,4 +101,21 @@ public class AnswerBusinessService {
         }
     }
 
+    public List<AnswerEntity> performGetAllAnswersToQuestion(final String authorizationToken, String questionId) throws AuthorizationFailedException, InvalidQuestionException {
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                QuestionEntity questionEntity = questionBusinessService.getQuestionForQuestionId(questionId);
+                if (questionEntity != null) {
+                    return answerDao.getAllAnswersToQuestion(questionEntity.getId());
+                } else {
+                    throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
+                }
+            } else {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
+            }
+        } else {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+    }
 }
