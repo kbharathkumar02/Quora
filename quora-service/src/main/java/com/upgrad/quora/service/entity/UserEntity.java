@@ -1,9 +1,6 @@
 package com.upgrad.quora.service.entity;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,6 +15,7 @@ import java.util.List;
                 @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid"),
                 @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
                 @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName =:userName"),
+                @NamedQuery(name = "userAuthTokenByAccessToken", query = "select u from UserAuthTokenEntity u where u.accessToken = :accessToken ")
         }
 )
 
@@ -51,8 +49,8 @@ public class UserEntity implements Serializable {
     private String email;
 
     @NotNull
-//    @ToStringExclude
-    @Size(max=255)
+    @ToStringExclude
+    @Size(max = 255)
     @Column(name = "password")
     private String password;
 
@@ -74,7 +72,7 @@ public class UserEntity implements Serializable {
     @Column(name = "salt")
     @NotNull
     @Size(max = 200)
-//    @ToStringExclude
+    @ToStringExclude
     private String salt;
 
     @Column(name = "country")
