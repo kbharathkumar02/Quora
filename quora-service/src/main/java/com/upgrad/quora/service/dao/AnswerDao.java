@@ -22,6 +22,10 @@ public class AnswerDao {
         return answerEntity;
     }
 
+    public AnswerEntity editAnswerContent(AnswerEntity answerEntity) {
+        return entityManager.merge(answerEntity);
+    }
+
     public List<AnswerEntity> getAnswersForUserId(Integer userId) {
         try {
             return this.entityManager.createNamedQuery("getAnswersByUserId", AnswerEntity.class).setParameter("userId", userId).getResultList();

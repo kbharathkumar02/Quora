@@ -76,4 +76,29 @@ public class AnswerBusinessService {
         return answerEntity;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity performUpdateAnswer( String authorizationToken, String answerId, String answerContent) throws AuthorizationFailedException, AnswerNotFoundException {
+        UserAuthTokenEntity userAuthTokenEntity = userBusinessService.getUserAuthToken(authorizationToken);
+        if (userAuthTokenEntity != null) {
+            if (userBusinessService.isUserSignedIn(userAuthTokenEntity)) {
+                AnswerEntity answerEntity = getAnswerForAnswerId(answerId);
+                if (answerEntity != null) {
+                    if (isUserAnswerOwner(userAuthTokenEntity.getUser(), answerEntity.getUser())) {
+                        answerEntity.setAnswer(answerContent);
+                        return answerDao.editAnswerContent(answerEntity);
+                    } else {
+                        throw new AuthorizationFailedException("ATHR-003", "Only the answer owner can edit the answer");
+                    }
+                } else {
+                    throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
+                }
+            } else {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
+            }
+        }
+        else{
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+    }
+
 }
