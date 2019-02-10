@@ -11,6 +11,12 @@ INSERT INTO users(id, uuid, firstname, lastname, username, email, password, salt
     VALUES (1028,'database_uuid3','database_firstname3','database_lastname3','database_username3','database_email3','database_password3','database_salt3', 'database_country3' ,'database_aboutme3' ,'database_dob3' , 'nonadmin' , 'database_contactnumber3' );
 INSERT INTO users(id, uuid, firstname, lastname, username, email, password, salt, country, aboutme, dob, role, contactnumber)
     VALUES (1029,'database_uuid4','database_firstname4','database_lastname4','database_username4','database_email4','database_password4','database_salt4', 'database_country4' ,'database_aboutme4' ,'database_dob4' , 'nonadmin' , 'database_contactnumber4' );
+INSERT INTO users(id, uuid, firstname, lastname, username, email, password, salt, country, aboutme, dob, role, contactnumber)
+    VALUES (1030,'database_uuid5','database_firstname5','database_lastname5','database_username5','database_email5','database_password5','database_salt5', 'database_country5' ,'database_aboutme5' ,'database_dob5' , 'nonadmin' , 'database_contactnumber5' );
+INSERT INTO users(id, uuid, firstname, lastname, username, email, password, salt, country, aboutme, dob, role, contactnumber)
+    VALUES (1031,'database_uuid6','database_firstname6','database_lastname6','database_username6','database_email6','database_password6','database_salt6', 'database_country6' ,'database_aboutme6' ,'database_dob6' , 'nonadmin' , 'database_contactnumber6' );
+INSERT INTO users(id, uuid, firstname, lastname, username, email, password, salt, country, aboutme, dob, role, contactnumber)
+    VALUES (1032,'database_uuid7','database_firstname7','database_lastname7','database_username7','database_email7','database_password7','database_salt7', 'database_country7' ,'database_aboutme7' ,'database_dob7' , 'nonadmin' , 'database_contactnumber7' );
 
 
 --Insert values in USER_AUTH table
